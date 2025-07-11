@@ -1,0 +1,36 @@
+# Secret Configuration (sensitive data)
+secret_data = {
+  "IBM_CLOUD_API_KEY" = "<IBM CLOUD API KEY>"
+  "IBM_API_USERNAME"  = "<IBM_Classic_API_Username>" # Check README.md for more details.Format:<SL_account>_<login_email>
+  "IBM_API_KEY"       = "<IBM Classic Infrastructure API Key>"
+}
+
+# ConfigMap Configuration (non-sensitive data)
+config_data = {
+  "IBM_CUSTOM_TAGS_LIST" = "tag1:value1,tag2:value2,tag3:value3"
+  "account"              = "Account Name"
+  # Don't change the values below,
+  # unless you know what you are doing
+  "PUBLIC_CLOUD_NAME"    = "IBM"
+  "policy"               = "tag_resources"
+}
+
+# IBM Cloud Configuration
+region              = "us-east"
+resource_group_name = "auto-tagger"
+
+# Project Configuration
+project_name = "auto-tagger"
+job_name     = "auto-tagger-job"
+
+# Container Configuration
+container_image = "quay.io/cloud-governance/cloud-governance:latest"
+
+# Scheduling Configuration
+cron_expression = "0 0 */1 * *"  # Daily at midnight UTC
+timezone        = "UTC"
+
+# Resource Limits
+cpu_limit    = "0.125"
+memory_limit = "250M"
+retry_limit  = 3
