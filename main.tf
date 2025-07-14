@@ -30,10 +30,12 @@ resource "ibm_resource_tag" "auto_tagger_project_tags" {
 
 # Secret for sensitive configuration
 resource "ibm_code_engine_secret" "auto_tagger_secret" {
-  project_id = ibm_code_engine_project.auto_tagger_project.project_id
-  name       = "${var.job_name}-secret"
-  format     = "generic"
-  data       = var.secret_data
+  project_id        = ibm_code_engine_project.auto_tagger_project.project_id
+  name              = "${var.job_name}-secret"
+  format            = "generic"
+  data              = merge(var.secret_data, {
+  IBM_CLOUD_API_KEY = ibm_iam_service_api_key.auto_tagger_api_key.apikey
+})
 }
 
 # ConfigMap for non-sensitive configuration
@@ -73,4 +75,28 @@ resource "ibm_code_engine_job" "auto_tagger_job" {
     ibm_code_engine_config_map.auto_tagger_config,
     ibm_code_engine_secret.auto_tagger_secret
   ]
+}
+
+# Service ID to be used for authentication
+resource "ibm_iam_service_id" "auto_tagger_service_id" {
+  name        = var.service_id_name
+  description = "Service ID for the auto-tagger Cloud Engine Job"
+}
+
+# Tag the Service ID
+resource "ibm_resource_tag" "auto_tagger_service_id_tags" {
+    resource_id = ibm_iam_service_id.auto_tagger_service_id.crn
+    tags        = local.tags
+}
+
+# Attach policy to the Service ID
+resource "ibm_iam_service_policy" "auto_tagger_service_id_policy" {
+  iam_service_id = ibm_iam_service_id.auto_tagger_service_id.id
+  roles          = ["Editor"]
+}
+
+# Generate an API key
+resource "ibm_iam_service_api_key" "auto_tagger_api_key" {
+  name           = "auto-tagger API key"
+  iam_service_id = ibm_iam_service_id.auto_tagger_service_id.iam_id
 }

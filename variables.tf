@@ -68,3 +68,9 @@ variable "config_data" {
   description = "Non-sensitive configuration data for the configmap"
   type        = map(string)
 }
+
+variable "service_id_name" {
+  description = "Name for the Service ID used by the auto-tagger job"
+  type        = string
+  default     = "auto-tagger"
+}

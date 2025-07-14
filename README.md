@@ -24,12 +24,10 @@ As the [redhat-performance/cloud-governance](https://github.com/redhat-performan
 
 1. **IBM Cloud Account**: Ensure you have an active IBM Cloud account
     - [Create an API key](https://cloud.ibm.com/docs/account?topic=account-userapikey&interface=ui)
-    - [Create a classic infrastructure API key](https://cloud.ibm.com/docs/account?topic=account-classic_keys&interface=ui)
 1. **Terraform**: [Install Terraform](https://developer.hashicorp.com/terraform/install)
 1. **IBM Cloud CLI**:
     - [Install and configure the IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cli-install-ibmcloud-cli)
     - [Install the Cloud Engine plugin](https://cloud.ibm.com/docs/codeengine?topic=codeengine-cli)
-1. **`jq`** (Optional): Install [jq](https://jqlang.org/)
 
 
 ## Usage
@@ -44,13 +42,7 @@ ibmcloud login -a https://cloud.ibm.com -u passcode -p <passcode>
 
 **Note**: The easiest method to get the passcode is to log into the IBM Cloud console via a browser, click on the avatar icon in the top-right corner, and click on **Log in to CLI and API**.
 
-### 2. Generate classic infrastructure username
-
-```bash
-echo "$(ibmcloud account show -o json | jq -r '.ims_account_id')_$(ibmcloud target --output json | jq -r '.user.user_email')"
-```
-
-### 3. Configuration
+### 2. Configuration
 
 1. Copy the example configuration file:
    ```bash
@@ -59,18 +51,22 @@ echo "$(ibmcloud account show -o json | jq -r '.ims_account_id')_$(ibmcloud targ
 
 1. Edit `terraform.tfvars` with your specific values:
    ```hcl
-    secret_data = {
-        "IBM_CLOUD_API_KEY" = "<IBM CLOUD API KEY>"
-        "IBM_API_USERNAME"  = "<Classic infra username>"
-        "IBM_API_KEY"       = "<IBM Classic Infrastructure API Key>"
-    }
-
     config_data = {
         "IBM_CUSTOM_TAGS_LIST" = "tag1:value1,tag2:value2,tag3:value3"
         "account"              = "Account Name"
+        "RESOURCE_TO_TAG"      = "resource_instances,virtual_servers,schematics_workspaces"
         ...
     }
    ```
+
+    **Note**: If *Classic Infrastructure* access is required, generate and configure an IBM Cloud API key as `IBM_API_KEY` and leave `IBM_API_USERNAME` as the default value:
+
+    ```hcl
+    secret_data = {
+        "IBM_API_KEY"       = "<Personal IBM Cloud API Key>"
+        "IBM_API_USERNAME"  = "apikey"
+    }
+    ```
 
 ### 4. Deployment
 
